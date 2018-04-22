@@ -13,13 +13,14 @@
 #ifndef CONSTANTS_H
 # define CONSTANTS_H
 # include <stdlib.h>
+# include <stdint.h>
 
 /*
 ** Configurable size constants
 */
 
-# ifndef FUNC_BLOCK_NAME
-#  define FUNC_BLOCK_NAME 25
+# ifndef FUNC_NAME_SIZE
+#  define FUNC_NAME_SIZE 25
 # endif
 
 # ifndef FENCE_SIZE
@@ -30,6 +31,9 @@
 #  define FENCE_ZONE_SIZE 100
 # endif
 
+# ifndef BUCKET_SIZE
+#  define BUCKET_SIZE 8
+# endif
 
 /*
 ** Size types (from @riking/libft)
@@ -48,7 +52,11 @@ typedef uint64_t	t_u64;
 ** Redzone-specific size constraints.
 */
 
-typedef t_u16	t_
-typedef t_u32	t_bsize;
+typedef t_s8	t_magic;
+typedef t_u8	t_index;
+typedef t_u8	t_fence;
+typedef t_u8	t_bool;
+typedef t_u16	t_smsize;
+typedef t_u32	t_size;
 
 #endif
