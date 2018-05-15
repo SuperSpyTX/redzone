@@ -30,6 +30,9 @@
 #  define FENCE_ZONE_SIZE 100
 # endif
 
+# ifndef BUCKET_SIZE
+#  define BUCKET_SIZE 8
+# endif
 
 /*
 ** Size types (from @riking/libft)
@@ -43,12 +46,5 @@ typedef	uint8_t		t_u8;
 typedef uint16_t	t_u16;
 typedef uint32_t	t_u32;
 typedef uint64_t	t_u64;
-
-/*
-** Redzone-specific size constraints.
-*/
-
-typedef t_u16	t_
-typedef t_u32	t_bsize;
 
 #endif
