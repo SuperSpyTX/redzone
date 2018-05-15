@@ -10,15 +10,16 @@ set shortmess=aoO
 badd +47 Makefile.m4
 badd +37 src/redzone.c
 badd +41 includes/redzone.h
-badd +1 term://.//44159:fish
+badd +1 term://.//2261:fish
 badd +1 includes/get_next_line.h
 badd +1 includes/constants.h
 badd +1 includes/commontypes.h
-badd +23 test.c
-badd +0 term://.//59408:fish
+badd +1 test.c
+badd +1 term://.//2398:fish
+badd +0 includes/buckets.h
 argglobal
 silent! argdel *
-argadd test.c
+argadd includes/buckets.h
 set stal=2
 edit includes/constants.h
 set splitbelow splitright
@@ -27,7 +28,10 @@ vsplit
 1wincmd h
 wincmd _ | wincmd |
 split
-1wincmd k
+wincmd _ | wincmd |
+split
+2wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd _ | wincmd |
@@ -38,14 +42,16 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winminheight=1 winminwidth=1 winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 34 + 35) / 70)
-exe 'vert 1resize ' . ((&columns * 100 + 101) / 202)
-exe '2resize ' . ((&lines * 32 + 35) / 70)
-exe 'vert 2resize ' . ((&columns * 100 + 101) / 202)
-exe '3resize ' . ((&lines * 34 + 35) / 70)
-exe 'vert 3resize ' . ((&columns * 101 + 101) / 202)
-exe '4resize ' . ((&lines * 32 + 35) / 70)
-exe 'vert 4resize ' . ((&columns * 101 + 101) / 202)
+exe '1resize ' . ((&lines * 22 + 35) / 70)
+exe 'vert 1resize ' . ((&columns * 101 + 102) / 204)
+exe '2resize ' . ((&lines * 22 + 35) / 70)
+exe 'vert 2resize ' . ((&columns * 101 + 102) / 204)
+exe '3resize ' . ((&lines * 21 + 35) / 70)
+exe 'vert 3resize ' . ((&columns * 101 + 102) / 204)
+exe '4resize ' . ((&lines * 34 + 35) / 70)
+exe 'vert 4resize ' . ((&columns * 102 + 102) / 204)
+exe '5resize ' . ((&lines * 32 + 35) / 70)
+exe 'vert 5resize ' . ((&columns * 102 + 102) / 204)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -56,12 +62,31 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 32 - ((19 * winheight(0) + 17) / 34)
+let s:l = 61 - ((1 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-32
+61
 normal! 0
+lcd ~/Documents/42/malloc
+wincmd w
+argglobal
+edit ~/Documents/42/malloc/includes/buckets.h
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 29 - ((20 * winheight(0) + 11) / 22)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+29
+normal! 06|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
@@ -75,12 +100,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 80 - ((31 * winheight(0) + 16) / 32)
+let s:l = 54 - ((20 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-80
-normal! 0
+54
+normal! 030|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
@@ -103,7 +128,7 @@ normal! 042|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit term://.//44159:fish
+edit term://.//2261:fish
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -112,21 +137,24 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 57 - ((8 * winheight(0) + 16) / 32)
+let s:l = 81 - ((31 * winheight(0) + 16) / 32)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-57
-normal! 027|
+81
+normal! 043|
 wincmd w
-exe '1resize ' . ((&lines * 34 + 35) / 70)
-exe 'vert 1resize ' . ((&columns * 100 + 101) / 202)
-exe '2resize ' . ((&lines * 32 + 35) / 70)
-exe 'vert 2resize ' . ((&columns * 100 + 101) / 202)
-exe '3resize ' . ((&lines * 34 + 35) / 70)
-exe 'vert 3resize ' . ((&columns * 101 + 101) / 202)
-exe '4resize ' . ((&lines * 32 + 35) / 70)
-exe 'vert 4resize ' . ((&columns * 101 + 101) / 202)
+5wincmd w
+exe '1resize ' . ((&lines * 22 + 35) / 70)
+exe 'vert 1resize ' . ((&columns * 101 + 102) / 204)
+exe '2resize ' . ((&lines * 22 + 35) / 70)
+exe 'vert 2resize ' . ((&columns * 101 + 102) / 204)
+exe '3resize ' . ((&lines * 21 + 35) / 70)
+exe 'vert 3resize ' . ((&columns * 101 + 102) / 204)
+exe '4resize ' . ((&lines * 34 + 35) / 70)
+exe 'vert 4resize ' . ((&columns * 102 + 102) / 204)
+exe '5resize ' . ((&lines * 32 + 35) / 70)
+exe 'vert 5resize ' . ((&columns * 102 + 102) / 204)
 tabedit ~/Documents/42/malloc/test.c
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -149,16 +177,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 18 - ((12 * winheight(0) + 16) / 33)
+let s:l = 29 - ((23 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-18
-normal! 054|
+29
+normal! 033|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit term://.//59408:fish
+edit term://.//2398:fish
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -167,18 +195,17 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 824 - ((32 * winheight(0) + 16) / 33)
+let s:l = 173 - ((32 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-824
+173
 normal! 043|
 lcd ~/Documents/42/malloc
 wincmd w
-2wincmd w
 exe '1resize ' . ((&lines * 33 + 35) / 70)
 exe '2resize ' . ((&lines * 33 + 35) / 70)
-tabnext 2
+tabnext 1
 set stal=1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

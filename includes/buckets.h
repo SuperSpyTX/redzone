@@ -1,20 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commontypes.h                                      :+:      :+:    :+:   */
+/*   buckets.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/19 16:55:18 by jkrause           #+#    #+#             */
-/*   Updated: 2018/04/19 16:55:18 by jkrause          ###   ########.fr       */
+/*   Created: 2018/04/21 18:17:36 by jkrause           #+#    #+#             */
+/*   Updated: 2018/04/21 18:29:33 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMONTYPES_H
-# define COMMONTYPES_H
+#ifndef BUCKETS_H
+# define BUCKETS_H
+
+# include "redzone.h"
 
 /*
-** Redzone-specific size constants.
+** Draft configuration.  TODO: Names
 */
+
+t_bucket			g_buckets[3] =
+{
+	{{0}, 1, 0x11, ALIGN(PAGESIZE(100), 4096), 0, 500},
+	{{0}, 1, 0x21, 1337, 501, 1024},
+	{{0}, 0, 0, 0, 0, 0}
+};
 
 #endif
