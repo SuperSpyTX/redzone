@@ -27,10 +27,6 @@
 #  define FENCE_SIZE 32
 # endif
 
-# ifndef FENCE_ZONE_SIZE
-#  define FENCE_ZONE_SIZE 100
-# endif
-
 # ifndef BUCKET_SIZE
 #  define BUCKET_SIZE 8
 # endif

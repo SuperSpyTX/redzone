@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 22:44:33 by jkrause           #+#    #+#             */
-/*   Updated: 2018/05/14 19:59:34 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/05/24 09:27:57 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 #include <stdio.h>
 #include "redzone.h"
 
-#define PAGE_SIZE sysconf(_SC_PAGESIZE)
-#define ALIGN(n) ((n + PAGE_SIZE) - (n - PAGE_SIZE-1))
-#define ALIGN2(n) ((n + PAGE_SIZE) & ~(PAGE_SIZE-1))
+#define ALIGN(n, pg) ((n + pg) & ~(pg-1))
 
 int				main(int argc, char **argv)
 {
@@ -25,10 +23,13 @@ int				main(int argc, char **argv)
 	int min = 0;
 	int max = 100;
 	int pgsize = getpagesize();
-	int zsize = ALIGN((sizeof(t_zone) + ((sizeof(t_page) * max) * 100));
+	int sizereq = sizeof(t_zone) + (((sizeof(t_page)) + max) * 100);
+	int zsize = ALIGN4(sizereq, pgsize);
+	int zs2 = ALIGN4(sizereq, pgsize);
 
-	printf("PG Size: %d\n", pgsize);
+	printf("Req Size: %d\n", sizereq);
 	printf("With Calculated Headers: %d\n", zsize);
+	printf("With previous commits I didn't realize: %d\n", zs2);
 	//len = ((len+4096) & ~(4096-1));
 	//len = (len + (2 - len % 2));
 	//printf("%d: %d\n", getpagesize(), len);
