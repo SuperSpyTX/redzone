@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/05/24 17:04:27 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/05/24 17:06:54 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,26 @@ typedef struct			s_alloc
 
 /*
 ** Each zone is essentially an memory page.
-** ptr_table is an pointer table for all allocations.
+** ptr_table is an pointer table for all allocations,
 ** Easier to then refer to specific memory allocations
 ** as necessary.
+*/
+
+/*
+** Pointer Table Model:
+**
+** Calculate the size of the table dynamically
+** by taking the max_size and dividing by 2.
+**
+** The idea is that if a single zone can be allocated with max_size
+** up to 100 times (PDF says they should hold at least 100 allocations),
+** then dividing it by 2 would increase the capacity twofold.
+** Continuously dividing the max_size by 2 until value is less than
+** (or equal to 0) min_size and multiplying the current capacity by 2
+** would return a reasonable size for the pointer table.
+**
+** Finding freed memory allocations after the fact is only a
+** matter of searching through the pointer table array.
 */
 
 typedef struct			s_zone
@@ -81,20 +98,6 @@ typedef struct			s_bucket
 	t_size	min_size;
 	t_size	max_size;
 }						t_bucket;
-
-/*
-** Pointer Table Model:
-**
-** Calculate the size of the table dynamically
-** by taking the max_size and dividing by 2.
-**
-** The idea is that if a single zone can be allocated with max_size
-** up to 100 times (PDF says they should hold at least 100 allocations),
-** then dividing it by 2 would increase the capacity twofold.
-** Continuously dividing the max_size by 2 until value is less than
-** (or equal to 0) min_size and multiplying the current capacity by 2
-** would return a reasonable size for the pointer table.
-*/
 
 /*
 ** Functional macros
