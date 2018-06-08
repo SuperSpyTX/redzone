@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 16:52:26 by jkrause           #+#    #+#             */
-/*   Updated: 2018/04/19 16:59:10 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/06 18:54:49 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,15 @@
 # endif
 
 # ifndef FENCE_SIZE
-#  define FENCE_SIZE 32
+#  define FENCE_SIZE 32/sizeof(t_fence)
 # endif
 
-# ifndef BUCKET_SIZE
-#  define BUCKET_SIZE 8
+# ifndef ZONE_PTR_SIZE
+#  define ZONE_PTR_SIZE 16
+# endif
+
+# ifndef FREEDPTR_SIZE
+#  define FREEDPTR_SIZE 256
 # endif
 
 /*
@@ -38,6 +42,7 @@
 typedef int8_t		t_s8;
 typedef int16_t		t_s16;
 typedef int32_t		t_s32;
+typedef int64_t		t_s64;
 
 typedef	uint8_t		t_u8;
 typedef uint16_t	t_u16;
@@ -48,11 +53,17 @@ typedef uint64_t	t_u64;
 ** Redzone-specific size constraints.
 */
 
-typedef t_s8	t_magic;
-typedef t_u8	t_index;
-typedef t_u8	t_fence;
 typedef t_u8	t_bool;
-typedef t_u16	t_smsize;
+typedef t_u16	t_magic;
+typedef t_u16	t_index;
+typedef t_u32	t_count;
 typedef t_u32	t_size;
+typedef t_u64	t_fence;
+
+/*
+** Redzone-specific conventional types
+*/
+
+# define T_INIT __attribute__((constructor)) void
 
 #endif

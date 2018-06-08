@@ -1,29 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   buckets.h                                          :+:      :+:    :+:   */
+/*   sbrk.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/21 18:17:36 by jkrause           #+#    #+#             */
-/*   Updated: 2018/04/21 18:29:33 by jkrause          ###   ########.fr       */
+/*   Created: 2018/06/06 17:06:57 by jkrause           #+#    #+#             */
+/*   Updated: 2018/06/06 17:58:46 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BUCKETS_H
-# define BUCKETS_H
+#include <stdio.h>
+#include <unistd.h>
+#include "redzone/internal.h"
+#include "redzone.h"
 
-# include "redzone.h"
-
-/*
-** Draft configuration.  TODO: Names
-*/
-
-t_bucket			g_buckets[3] =
+int				main(void)
 {
-	{{0}, 1, 0x11, ALIGN(PAGESIZE(60, 100), 4096), 0, 500},
-	{{0}, 1, 0x21, 1337, 501, 1024},
-	{{0}, 0, 0, 0, 0, 0}
-};
-
-#endif
+}

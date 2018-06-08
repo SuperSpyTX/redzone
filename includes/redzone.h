@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/05/24 17:06:54 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/05 17:20:28 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,116 +15,101 @@
 
 # include <stdlib.h>
 # include <stdio.h>
-# include "constants.h"
+# include <libft.h>
+# include <ft_printf.h>
 
-# ifndef DEBUG
-#  define DEBUG 0
+/*
+** Redzone config build options
+*/
+
+/*
+** Is this being built for the Malloc correction?
+** This makes minor changes (malloc.h symlink, etc) to the codebase.
+*/
+
+# ifndef REDZONE_CORRECTION
+#  define REDZONE_CORRECTION 0
 # endif
 
 /*
-** Structures
+** Compile-in forbidden features (mmap stats for example).
+** This flag allows things like REDZONE_MMAP_STATS to be
+** compiled regardless of REDZONE_CORRECTION.
+**
+** A compile-time warning is generated if REDZONE_CORRECTION
+** is set to 1.
 */
-
-/*
-** Formerly called 'pages'.
-** This structure is allocated within the page.
-*/
-
-typedef struct			s_alloc
-{
-# if DEBUG == 1
-
-	t_fence	fence[FENCE_SIZE];
-# else
-
-	t_fence	fence[0];
+# ifndef REDZONE_FORBIDDEN
+#  define REDZONE_FORBIDDEN !REDZONE_CORRECTION
 # endif
 
-	t_magic	magic;
-	t_size	size;
-# if DEBUG == 1
+/*
+** Minimum allocations per bucket (this is defined in the PDF)
+** Best not to do this unless tuning for performance.
+*/
 
-	char	malloc_func_name[FUNC_NAME_SIZE];
-	char	free_func_name[FUNC_NAME_SIZE];
-	char	probe_func_name[FUNC_NAME_SIZE];
-	t_size	allocation_size;
-	t_size	page_size;
+# ifndef REDZONE_MIN_ALLOCS
+#  define REDZONE_MIN_ALLOCS 100
 # endif
 
-}						t_alloc;
-
 /*
-** Each zone is essentially an memory page.
-** ptr_table is an pointer table for all allocations,
-** Easier to then refer to specific memory allocations
-** as necessary.
-*/
-
-/*
-** Pointer Table Model:
+** Defines whether or not to collect extra information on
+** Redzone's mmap() calls.  This is used for performance
+** optimizations and does not impact performance.
 **
-** Calculate the size of the table dynamically
-** by taking the max_size and dividing by 2.
+** This is a forbidden feature,
+** see "Forbidden Features" in redzone/internal.h for more information.
+*/
+
+# ifndef REDZONE_MMAP_STATS
+#  define REDZONE_MMAP_STATS REDZONE_FORBIDDEN
+# endif
+
+/*
+** The prime debugging features of Redzone.
+*/
+
+# ifndef REDZONE_DEBUG
+#  define REDZONE_DEBUG 0
+# endif
+
+/*
+** End of config options.
+*/
+
+/*
+** Alloc mem types.
+** TODO: Implement zone-specific allocation filtering via mode & zoneidx.
 **
-** The idea is that if a single zone can be allocated with max_size
-** up to 100 times (PDF says they should hold at least 100 allocations),
-** then dividing it by 2 would increase the capacity twofold.
-** Continuously dividing the max_size by 2 until value is less than
-** (or equal to 0) min_size and multiplying the current capacity by 2
-** would return a reasonable size for the pointer table.
-**
-** Finding freed memory allocations after the fact is only a
-** matter of searching through the pointer table array.
+** Allocations (default): Show all allocations.
+** mmap stats: Show basic statistics on Redzone's mmap calls.
+** Freed Memory: Show all freed memory regions/allocations.
 */
 
-typedef struct			s_zone
-{
-	t_index	index;
-	t_size	cur_bytes;
-	t_size	max_bytes;
-	t_alloc	**ptr_table;
-}						t_zone;
-
-/*
-** Bucket holds multiple zones (in blocks of 8)
-** TODO: Should we change the zones allocation to the pointer table model?
-*/
-typedef struct			s_bucket
-{
-	t_zone	*zones[BUCKET_SIZE];
-	t_size	zones_ct;
-	t_magic	set_magic;
-	t_size	set_block_size;
-	t_size	min_size;
-	t_size	max_size;
-}						t_bucket;
-
-/*
-** Functional macros
-*/
-
-# define ALIGN(n, pg) ((n + pg) & ~(pg-1))
-# define PAGESIZE(size, ct) (sizeof(t_zone) + (((sizeof(t_page)) + size) * ct)
-
-/*
-** Include the bucket configuration here.
-*/
+# define ALLOC_MODE 0
+# define MMAP_STATS_MODE 1
+# define FREED_MEMORY_MODE 2
 
 /*
 ** Standard functions
 */
 
-void					*malloc(size_t size);
-void					*realloc(void *ptr, size_t size);
-void					free(void *ptr);
+void			*malloc(size_t size);
+void			*realloc(void *ptr, size_t size);
+void			free(void *ptr);
 
-void					show_alloc_mem(void);
+void			show_alloc_mem(void);
+void			show_alloc_mem_ex(int type);
 
 /*
-** Redzone-specific debugging functions
+** POSIX standard functions
 */
 
-# if DEBUG == 1
+int				malloc_size(void *ptr);
+
+/*
+** Redzone-specific functions
+*/
 
 /*
 ** Redzone check
@@ -146,8 +131,13 @@ int				redzone_check_bounds(void *ptr, size_t size);
 char			*redzone_probe(void *ptr);
 
 /*
+** Redzone guard (protect memory allocations)
+** Makes redzone pretend that guarded allocations do not exist,
+** thus does NOP on free()/realloc() etc.
+*/
+
+/*
 ** Redzone libft.
 */
-# endif
 
 #endif

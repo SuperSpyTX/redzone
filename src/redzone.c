@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:11 by jkrause           #+#    #+#             */
-/*   Updated: 2018/04/18 16:04:51 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/06 18:54:45 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,4 @@ void			free(void *ptr)
 
 void			show_alloc_mem(void)
 {
-#if DEBUG == 1
-	printf("You are in debug mode!");
-#endif
 }
-

@@ -6,16 +6,17 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 22:44:33 by jkrause           #+#    #+#             */
-/*   Updated: 2018/05/24 09:27:57 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/05 20:19:27 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
 #include "redzone.h"
+#include "redzone/internal.h"
 
-#define ALIGN(n, pg) ((n + pg) & ~(pg-1))
-
+/*
+ * Page size alignment
 int				main(int argc, char **argv)
 {
 	(void)argc;
@@ -24,8 +25,8 @@ int				main(int argc, char **argv)
 	int max = 100;
 	int pgsize = getpagesize();
 	int sizereq = sizeof(t_zone) + (((sizeof(t_page)) + max) * 100);
-	int zsize = ALIGN4(sizereq, pgsize);
-	int zs2 = ALIGN4(sizereq, pgsize);
+	int zsize = ALIGN(sizereq, pgsize);
+	int zs2 = ALIGN(sizereq, pgsize);
 
 	printf("Req Size: %d\n", sizereq);
 	printf("With Calculated Headers: %d\n", zsize);
@@ -33,5 +34,17 @@ int				main(int argc, char **argv)
 	//len = ((len+4096) & ~(4096-1));
 	//len = (len + (2 - len % 2));
 	//printf("%d: %d\n", getpagesize(), len);
+}
+*/
+
+int				main(int argc, char **argv)
+{
+	(void)argc;
+	(void)argv;
+	t_u8 base = 0xDE;
+	t_u8 index = 0;
+	t_u16 final = 0;
+	final = (((1 << 16) | base) << 8) | index;
+	printf("Base: %#x\nIndex: %d\nFinal: %#.2x\n", final >> 8, (final & 0xff), final);
 }
 
