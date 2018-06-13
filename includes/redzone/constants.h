@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 16:52:26 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/06 18:54:49 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/12 21:17:30 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 
 /*
 ** Configurable size constants
+**
+** Usually you would not normally have to configure these,
+** unless you're doing performance tunings.
 */
 
 # ifndef FUNC_NAME_SIZE
@@ -54,6 +57,7 @@ typedef uint64_t	t_u64;
 */
 
 typedef t_u8	t_bool;
+typedef t_u8	t_bmagic;
 typedef t_u16	t_magic;
 typedef t_u16	t_index;
 typedef t_u32	t_count;

@@ -9,18 +9,21 @@ endif
 set shortmess=aoO
 badd +1 Makefile.m4
 badd +13 src/redzone.c
-badd +61 includes/redzone.h
+badd +101 includes/redzone.h
 badd +25 includes/redzone/constants.h
-badd +1 includes/redzone/internal.h
+badd +290 includes/redzone/internal.h
 badd +153 configure
-badd +27 src/init.c
-badd +1 tests/sbrk.c
-badd +1 term://.//4361:fish
-badd +1 term://.//4242:fish
-badd +28 src/zone.c
+badd +17 src/init.c
+badd +1 term://.//87631:fish
+badd +1 term://.//87544:fish
+badd +42 src/zone.c
+badd +21 tests/pti.c
+badd +35 tests/old.c
+badd +32 src/buckets.c
+badd +30 src/alloc.c
 argglobal
 silent! argdel *
-argadd src/buckets.c
+argadd src/alloc.c
 set stal=2
 edit Makefile.m4
 set splitbelow splitright
@@ -44,12 +47,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 42 - ((41 * winheight(0) + 53) / 107)
+let s:l = 38 - ((37 * winheight(0) + 53) / 107)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-42
-normal! 0
+38
+normal! 0118|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
@@ -138,16 +141,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 248 - ((5 * winheight(0) + 17) / 35)
+let s:l = 259 - ((16 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-248
-normal! 058|
+259
+normal! 022|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit ~/Documents/42/malloc/includes/redzone/internal.h
+edit ~/Documents/42/malloc/tests/pti.c
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -157,12 +160,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 229 - ((13 * winheight(0) + 17) / 35)
+let s:l = 37 - ((33 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-229
-normal! 025|
+37
+normal! 073|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
@@ -176,16 +179,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 20 - ((19 * winheight(0) + 17) / 35)
+let s:l = 19 - ((11 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20
-normal! 0
+19
+normal! 011|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit ~/Documents/42/malloc/includes/redzone.h
+edit ~/Documents/42/malloc/includes/redzone/internal.h
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -195,12 +198,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 82 - ((34 * winheight(0) + 17) / 35)
+let s:l = 304 - ((32 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-82
-normal! 0
+304
+normal! 025|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
@@ -214,16 +217,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 31 - ((24 * winheight(0) + 17) / 35)
+let s:l = 60 - ((18 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 026|
+60
+normal! 08|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit ~/Documents/42/malloc/src/init.c
+edit ~/Documents/42/malloc/src/alloc.c
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -233,16 +236,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 32 - ((30 * winheight(0) + 17) / 35)
+let s:l = 59 - ((28 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-32
-normal! 055|
+59
+normal! 023|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit term://.//4242:fish
+edit term://.//87544:fish
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -260,6 +263,25 @@ normal! 045|
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
+edit ~/Documents/42/malloc/src/buckets.c
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 17) / 35)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+lcd ~/Documents/42/malloc
+wincmd w
+argglobal
 edit ~/Documents/42/malloc/src/zone.c
 setlocal fdm=manual
 setlocal fde=0
@@ -270,31 +292,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 22 - ((21 * winheight(0) + 17) / 35)
+let s:l = 41 - ((33 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-22
-normal! 025|
-lcd ~/Documents/42/malloc
-wincmd w
-argglobal
-edit ~/Documents/42/malloc/src/init.c
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 21 - ((0 * winheight(0) + 17) / 35)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-21
-normal! 0
+41
+normal! 013|
 lcd ~/Documents/42/malloc
 wincmd w
 7wincmd w
@@ -316,7 +319,7 @@ exe '8resize ' . ((&lines * 35 + 55) / 110)
 exe 'vert 8resize ' . ((&columns * 120 + 182) / 364)
 exe '9resize ' . ((&lines * 35 + 55) / 110)
 exe 'vert 9resize ' . ((&columns * 120 + 182) / 364)
-tabedit ~/Documents/42/malloc/tests/sbrk.c
+tabedit ~/Documents/42/malloc/tests/old.c
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -338,16 +341,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 20 - ((19 * winheight(0) + 21) / 43)
+let s:l = 47 - ((15 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20
+47
 normal! 0
 lcd ~/Documents/42/malloc
 wincmd w
 argglobal
-edit term://.//4361:fish
+edit term://.//87631:fish
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}

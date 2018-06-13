@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/07 21:02:42 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/06/12 20:13:34 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ typedef struct	s_zone
 	t_index		index;
 	t_size		cur_bytes;
 	t_size		max_bytes;
-	t_size		ptrtblsize;
+	t_size		ptrtblct;
 	t_alloc		**ptr_tbl;
 }				t_zone;
 
@@ -135,58 +135,95 @@ typedef struct	s_freedptr
 typedef struct	s_bucket
 {
 	t_zone		**zones;
-	t_freedptr	***freedptrs;
+	t_freedptr	**freedptrs;
 	t_count		zones_ct;
 	t_count		freedptrs_ct;
-	t_magic		base_magic;
+	t_bmagic	base_magic;
 	t_size		min_size;
 	t_size		max_size;
-	t_bool		special;
 }				t_bucket;
 
 /*
 ** Macros & Global Variables
 */
 
-# define TINY_MALLOC 0x4200
-# define SMALL_MALLOC 0x2100
-# define LARGE_MALLOC 0x1600
-# define TEST_MALLOC 0x1300
+# define BUCKET_MAX_COUNT 3
+
+# define TINY_MALLOC 0x00
+# define SMALL_MALLOC 0x02
+# define LARGE_MALLOC 0x04
 
 # ifdef A_LARGE_INIT_HACK
 
-t_bucket		g_buckets[6] =
+t_bucket		g_buckets[BUCKET_MAX_COUNT] =
 {
-	{0, 0, 0, 0, TEST_MALLOC, 0, 100, 2},
-	{0, 0, 0, 0, TINY_MALLOC, 0, 100, 0},
-	{0, 0, 0, 0, SMALL_MALLOC, 100, 500, 0},
-	{0, 0, 0, 0, LARGE_MALLOC, 500, 0, 1},
-	{0, 0, 0, 0, 0, 0, 0, 0}
+	{0, 0, 0, 0, TINY_MALLOC, 0, 100},
+	{0, 0, 0, 0, SMALL_MALLOC, 100, 500},
+	{0, 0, 0, 0, LARGE_MALLOC, 500, 0}
 };
 
 # else
 
-extern t_bucket	g_buckets[6];
+extern t_bucket	g_buckets[BUCKET_MAX_COUNT];
 # endif
 
 # define FREED_MALLOC_BUCKET 3
 
+/*
+** Size Macros
+*/
+
 # define ALLOC_SIZE(size) (sizeof(t_alloc)+size)
 # define MAX_ALLOC_SIZE(size) (ALLOC_SIZE(size) * REDZONE_MIN_ALLOCS)
-# define PTI_SIZE(b) (ALLOC_SIZE(b.min_size) / MAX_ALLOC_SIZE(b.max_size))
+
 # define PTR_SIZE(ct) (sizeof(t_zone*) * ct)
 
-# define MAS(size) MAX_ALLOC_SIZE(size)
-# define PTI(b) PTI_SIZE(b)
+# define PTI_SIZE(b) (PTI_CT(b) * sizeof(t_alloc*))
+# define ZPTI_SIZE(z) (z->ptrtblct * sizeof(t_alloc*))
 
-# define TIP0(zobj, size) zobj[size/ZONE_PTR_SIZE][size%ZONE_PTR_SIZE]
-# define TIP(bucket) TIP0(bucket.zones, bucket.zones_ct - 1)
+# define ZONE_SIZE(size, b) ALIGN(sizeof(t_zone) + MAS(size) + PTI_SIZE(b))
 
-# define ALIGN0(n, pg) ((n + pg) & ~(pg-2))
+/*
+** Count / Index Macros
+*/
+
+# define PTI_CT(b) (MAX_ALLOC_SIZE(b->max_size) / ALLOC_SIZE(b->min_size))
+# define ZPTI_CT(z) (z->ptrtblct)
+
+# define PT_IDX(s, b) (s / ALLOC_SIZE(b->min_size))
+
+# define MAGIC_ZIDX(m) (m & 0xff)
+# define MAGIC_BM(m) (m >> 8)
+
+/*
+** Functional Macros
+*/
+
+# define ALLOC_PTR(z, b) (z + sizeof(t_zone) + b)
+
+# define ZONE_PTR(zobj, size) &zobj[size/ZONE_PTR_SIZE][size%ZONE_PTR_SIZE]
+# define TIP(bucket) ZONE_PTR(bucket->zones, (bucket->zones_ct - 1))
+
+# define ALIGN0(n, pg) ((n + pg) & ~(pg-1))
 # define ALIGN(n) ALIGN0(n, getpagesize())
 
-# define ZONE_SIZE(size, b) ALIGN(sizeof(t_zone) + MAS(size) + PTI(b))
-# define ZONE(bucket) ZONE_SIZE(bucket.max_size, bucket)
+# define MAGIC(bm, zi) ((((1 << 16) | bm) << 8) | zi)
+
+/*
+** "Aliases"
+*/
+
+# define MAS(size) MAX_ALLOC_SIZE(size)
+# define AS(size) ALLOC_SIZE(size)
+
+# define ZONE(bucket) ZONE_SIZE(bucket->max_size, bucket)
+
+/*
+** Contraband Functions
+*/
+
+# define MZB0(z, b) ((z + ZONE(b)) - ALLOC_PTR(z, 0))
+# define MAX_ZONE_BYTES(z, b) MZB0(z, b)
 
 # define LOOPI(p1, p2) for (t_u64 i = 0; i < p1; p2) {
 # define LOOPT(p1, p2, p3) for (p1; p2; p3) {
@@ -203,11 +240,6 @@ extern t_bucket	g_buckets[6];
 ** and if this is being built for a correction (REDZONE_CORRECTION=1),
 ** then these extra variables are not compiled in, otherwise it will violate
 ** the rules of the correction.
-**
-** You can't trust any corrector to not fail you on dumb shit like this,
-** so by having this wall of text will hopefully re-inforce the idea that
-** this is not compiled in during corrections, and the relevant
-** features that use it are disabled.
 **
 ** Variables are obfuscated for obvious reasons.
 */
@@ -242,9 +274,33 @@ size_t			g_mct;
 */
 
 /*
-** Internal functions
+** Redzone internal function naming scheme:
+** (oh no not another one of these walls of text)
+**
+** _initialize (Create & Instantiate a new object)
+** _ptr (Cast allocated pointer to relevant object)
+*/
+
+/*
+** Bucket management functions
+*/
+
+void			bucket_initialize(t_bucket *bucket);
+void			*bucket_allocate(t_bucket *b, size_t size);
+t_bucket		*bucket_ptr(void *ptr);
+
+/*
+** Zone management functions
 */
 
 int				zone_initialize(t_bucket *bucket, t_zone **ptr);
+t_zone			*zone_ptr(void *ptr);
+
+/*
+** Allocation management functions
+*/
+
+void			*alloc_initialize(t_bucket *b, t_zone *z, size_t sz);
+void			*allocate(size_t size);
 
 #endif

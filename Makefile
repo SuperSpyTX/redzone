@@ -19,10 +19,12 @@ endif
 REDZONE_NAME = redzone_malloc_$(HOSTTYPE).so
 REDZONE_SYMNAME = redzone_malloc.so
 LFLAGS = -shared
-CFLAGS = -g -DREDZONE_DEBUG=1 -fPIC -Wall -Werror -Wextra 
+CFLAGS =  -fPIC -Wall -Werror -Wextra 
 CFLAGS += -I includes
-REDZONE_SRC = src/redzone.c \
+REDZONE_SRC = src/buckets.c \
+src/redzone.c \
 src/init.c \
+src/alloc.c \
 src/zone.c \
 libft-min/ft_strcmp.c \
 libft-min/ft_memcpy.c \
