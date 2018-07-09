@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/18 10:26:16 by jkrause           #+#    #+#             */
-/*   Updated: 2017/12/04 02:15:36 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/05 18:02:36 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 ** .
 ** Buffer_Type (String or Direct)
 ** String - Buffers to string
-** Direct - Directly prints (continues to print if there's an error)
+** Direct - Directly prints until max_length hit, then it sinkholes.
 */
 
 # ifndef BUFFER_TYPE
@@ -89,18 +89,37 @@ typedef struct			s_input
 	char				type;
 }						t_input;
 
+/*
+** Write Modules
+*/
+
 int						bufferwrite_module_write(t_input *input, char *write);
 int						bufferwrite_module_flush(t_input *input, void *nil);
+
 int						bufferstring_module_write(t_input *input, char *string);
 int						bufferstring_module_flush(t_input *input, void *nil);
 char					*bufferstring_module_retrieve(void);
 
+void					directbuffer_module_init(char *ptr, size_t max_length);
+int						directbuffer_module_flush(t_input *input, void *nil);
+void					directbuffer_module_write(t_input *input, char *write);
+
+/*
+** Printf Modules
+*/
+
 int						parse_module(t_input *input, void *fmt);
-int						format_module(t_input *input, char *str);
+int						formati_module(t_input *input, char *str);
 int						integer_module(t_input *input, va_list *ptr);
 int						string_module(t_input *input, va_list *ptr);
 int						asterisks_module(t_input *input, va_list *ptr);
 int						memorywrite_module(t_input *input, va_list *ptr);
+
+/*
+** Eternity-long deprecated modules program.
+*/
+
+int						format_module(t_input *input, char *str);
 
 /*
 ** Module Manager
@@ -111,10 +130,10 @@ typedef	int			(*t_module)(t_input *input, void *arg);
 void					module_init();
 void					module_init2();
 int						module_call(char key, t_input *input, void *args);
-void					write_module(char *str, int freeme, int writenull);
+int						write_module(char *str, int length);
 int						write_flush(int code);
 
-t_module				*g_modules;
+t_module				g_modules[256];
 
 /*
 ** Exported functions from modules.
@@ -123,10 +142,15 @@ t_module				*g_modules;
 
 char					*width(t_input *in, char *str,
 							char *result, int *bsize);
+int						search(t_input *parsed, char *fmt);
+
 /*
 ** Main prototypes
 */
 
 int						ft_printf(const char *fmt, ...);
 char					*ft_sprintf(const char *fmt, ...);
+int						ft_snprintf(char *ptr, size_t max,
+							const char *fmt, ...);
+
 #endif

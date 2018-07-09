@@ -1,63 +1,59 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_module.c                                    :+:      :+:    :+:   */
+/*   formati_module.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 22:43:59 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 21:27:52 by jkrause          ###   ########.fr       */
+/*   Created: 2018/07/05 19:13:11 by jkrause           #+#    #+#             */
+/*   Updated: 2018/07/05 22:33:36 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
 /*
-** DEPRECATED: See formati_module for more information.
+** Improved Format Module.
+** The idea is not to allocate any extra memory.
 */
 
-char				*prefix(t_input *in, char *str, char *result, int *bsize)
+int					pad_write_module(char c, int repeats)
 {
-	char				*tmp;
+	while ((--repeats) != 0)
+		write_module(&c, 1);
+	return (repeats);
+}
 
-	tmp = 0;
+int					prefixi(t_input *in, char *str, int write, int len)
+{
+	int					length;
+	char				tmp[3];
+
+	tmp[0] = 0;
+	tmp[1] = 0;
 	if ((in->flag_alt_mode && LC(in->type, 'x') && ft_strlen(str) == 0)
 			|| (*str == '0' && !LC(in->type, 'd')
 				&& in->error != -9) || LC(in->type, 'u'))
-		return (expand_write("", 0, result, bsize));
+		return (0);
 	if (in->length_extended == 4)
-		result = expand_write("-", 1, result, bsize);
+		ft_memcpy(&tmp, "-", 2);
 	else if (in->module == 'i' && in->flag_all_signs_char != 0)
-	{
-		tmp = ft_strnew(1);
 		tmp[0] = in->flag_all_signs_char;
-		result = expand_write(tmp, 1, result, bsize);
-	}
 	else if (in->module == 'i' && in->flag_alt_mode == 1 && CMP(in->type, 'x'))
-		result = expand_write("0x", 2, result, bsize);
+		ft_memcpy(&tmp, "0x", 2);
 	else if (in->module == 'i' && in->flag_alt_mode == 1 && CMP(in->type, 'X'))
-		result = expand_write("0X", 2, result, bsize);
+		ft_memcpy(&tmp, "0X", 2);
 	else if (in->module == 'i' && in->flag_alt_mode == 1
 			&& CMP(in->type, 'o') && *str != '0')
-		result = expand_write("0", 1, result, bsize);
-	if (tmp)
-		free(tmp);
-	return (result);
+		ft_memcpy(&tmp, "0", 2);
+	tmp[2] = 0;
+	length = ft_strlen(tmp);
+	if (write != 0)
+		write_module((char*)&tmp, (len < length && len >= 0 ? len : length));
+	return (length);
 }
 
-int					prefixstr(t_input *in, char *str)
-{
-	int					rsize;
-	char				*result;
-
-	result = 0;
-	rsize = 0;
-	result = prefix(in, str, result, &rsize);
-	free(result);
-	return (rsize);
-}
-
-char				*precise(t_input *in, char *str, char *result, int *bsize)
+void				precisei(t_input *in, char *str)
 {
 	int					precision;
 	int					length;
@@ -68,24 +64,20 @@ char				*precise(t_input *in, char *str, char *result, int *bsize)
 	{
 		if (precision <= 0 && in->module != 'i')
 		{
-			result = prefix(in, str, result, bsize);
 			length = precision + length;
-		}
-		else if (precision > 0 && in->module == 'i')
-		{
-			result = prefix(in, str, result, bsize);
-			result = expand_pad('0', precision, result, bsize);
+			prefixi(in, str, 1, length);
 		}
 		else
-			result = prefix(in, str, result, bsize);
+			prefixi(in, str, 1, -1);
+		if (precision > 0 && in->module == 'i')
+			pad_write_module('0', precision);
 	}
 	else if (in->error != 3)
-		result = prefix(in, str, result, bsize);
-	result = expand_write(str, length, result, bsize);
-	return (result);
+		prefixi(in, str, 1, -1);
+	write_module(str, length);
 }
 
-char				*width(t_input *in, char *str, char *result, int *bsize)
+void				widthi(t_input *in, char *str)
 {
 	int					width;
 	int					length;
@@ -93,7 +85,7 @@ char				*width(t_input *in, char *str, char *result, int *bsize)
 	length = in->output_length;
 	if (length > 0 || CMP(in->type, 'c')
 			|| (in->precision != INT_MIN && CMP(in->module, 'i')))
-		length = prefixstr(in, str)
+		length = prefixi(in, str, 0, -1)
 			+ (CMP(in->type, 'c') && length < 1 ? 1 : 0)
 			+ (((in->precision != INT_MIN && in->module != 'i') ||
 				(in->module == 'i' && in->precision > 0)) ? in->precision : 0)
@@ -103,40 +95,31 @@ char				*width(t_input *in, char *str, char *result, int *bsize)
 			&& in->precision == INT_MIN
 			&& in->flag_zero_pad && in->module == 'i')
 	{
-		result = prefix(in, str, result, bsize);
+		prefixi(in, str, 1, -1);
 		in->error = 3;
-		result = expand_pad('0', width, result, bsize);
+		pad_write_module('0', width);
 	}
 	else if (width > 0)
-		result = expand_pad(' ', width, result, bsize);
-	return (result);
+		pad_write_module(' ', width);
 }
 
-int					format_module(t_input *in, char *str)
+int					formati_module(t_input *in, char *str)
 {
-	char				*result;
-	int					bsize;
-
-	result = 0;
-	bsize = 0;
 	if (!in->output_length)
 		in->output_length = ft_strlen(str);
 	if (in->precision != INT_MIN)
 		in->precision -= in->output_length;
 	if (in->flag_left_justify)
 	{
-		result = precise(in, str, result, &bsize);
-		result = width(in, str, result, &bsize);
+		precisei(in, str);
+		widthi(in, str);
 	}
 	else if (CMP(in->type, 'c') && in->output_length == 0)
-		result = width(in, str, result, &bsize);
+		widthi(in, str);
 	else
 	{
-		result = width(in, str, result, &bsize);
-		result = precise(in, str, result, &bsize);
+		widthi(in, str);
+		precisei(in, str);
 	}
-	result = expand_write("\0", 1, result, &bsize);
-	write_module(result, bsize);
-	(in->output_length == 0 && LC(in->type, 'c') ? write_module("", 1) : 0);
 	return (1);
 }

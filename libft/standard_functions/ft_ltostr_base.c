@@ -66,8 +66,8 @@ static long					mulsize(void *value, int base, int sign)
 	return (size);
 }
 
-char						*ft_ltostr_base(void *value, int base,
-								char *alpha, int sign)
+char						*ft_ltostr_base(char *buff, size_t size,
+								char *alpha)
 {
 	char					*buffer;
 	int						buffsize;

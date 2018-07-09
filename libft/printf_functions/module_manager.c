@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/18 17:16:16 by jkrause           #+#    #+#             */
-/*   Updated: 2017/12/04 19:21:39 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/05 22:09:37 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,12 @@
 
 void					module_init(void)
 {
-	if (!g_modules)
-	{
-		g_modules = (t_module*)ft_memalloc(sizeof(t_module*) * 256);
-		g_modules[WRITEMODULE_WRITE] = (t_module)bufferwrite_module_write;
-		g_modules[WRITEMODULE_FLUSH] = (t_module)bufferwrite_module_flush;
-		g_modules[PARSEMODULE_PARSE] = (t_module)parse_module;
-		g_modules[FORMATMODULE_FORMAT] = (t_module)format_module;
-		g_modules[ASTERISKMODULE_PARSE] = (t_module)asterisks_module;
-		module_init2();
-	}
+	g_modules[WRITEMODULE_WRITE] = (t_module)bufferwrite_module_write;
+	g_modules[WRITEMODULE_FLUSH] = (t_module)bufferwrite_module_flush;
+	g_modules[PARSEMODULE_PARSE] = (t_module)parse_module;
+	g_modules[FORMATMODULE_FORMAT] = (t_module)formati_module;
+	g_modules[ASTERISKMODULE_PARSE] = (t_module)asterisks_module;
+	module_init2();
 }
 
 void					module_init2(void)
@@ -52,21 +48,11 @@ int						write_flush(int code)
 	return (module_call(WRITEMODULE_FLUSH, 0, (void*)(intptr_t)code));
 }
 
-void					write_module(char *str, int freeme, int writenull)
+int						write_module(char *str, int length)
 {
 	int					len;
 
-	if (!writenull)
-	{
-		len = ft_strlen(str);
-		if (len == 0)
-		{
-			if (freeme)
-				free(str);
-			return ;
-		}
-	}
-	module_call(WRITEMODULE_WRITE, 0, str);
-	if (freeme)
-		free(str);
+	len = (length < 0 ? ft_strlen(str) : length);
+	module_call(WRITEMODULE_WRITE, (t_input*)(intmax_t)len, str);
+	return (len);
 }

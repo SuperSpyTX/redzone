@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/12 20:13:34 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/05 18:02:23 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,7 @@ extern t_bucket	g_buckets[BUCKET_MAX_COUNT];
 ** then these extra variables are not compiled in, otherwise it will violate
 ** the rules of the correction.
 **
-** Variables are obfuscated for obvious reasons.
+** Variables are obfuscated for obvious (norm) reasons.
 */
 
 # define M0(len) mmap(0, len, PROT_READ|PROT_WRITE, MAP_ANON|MAP_PRIVATE, -1, 0)

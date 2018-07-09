@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/12 17:29:27 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/05 18:02:21 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,22 +90,24 @@
 # define MMAP_STATS_MODE 1
 # define FREED_MEMORY_MODE 2
 
+# define T_EXPVOID __attribute__((visibility("default")))void
+
 /*
 ** Standard functions
 */
 
-void			*malloc(size_t size);
-void			*realloc(void *ptr, size_t size);
-void			free(void *ptr);
+T_EXPVOID		*malloc(size_t size);
+T_EXPVOID		*realloc(void *ptr, size_t size);
+T_EXPVOID		free(void *ptr);
 
-void			show_alloc_mem(void);
-void			show_alloc_mem_ex(int type);
+T_EXPVOID		show_alloc_mem(void);
+T_EXPVOID		show_alloc_mem_ex(int type);
 
 /*
 ** POSIX standard functions
 */
 
-int				malloc_size(void *ptr);
+T_EXPVOID		malloc_size(void *ptr);
 
 /*
 ** Redzone-specific functions

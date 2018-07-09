@@ -19,8 +19,7 @@ int					bufferwrite_module_write(t_input *input, char *write)
 {
 	int					size;
 
-	size = ft_strlen(write);
-	(void)input;
+	size = (int)input;
 	if (g_buffersize < 1)
 		g_buffer = ft_strnew(0);
 	if (size == 0)
