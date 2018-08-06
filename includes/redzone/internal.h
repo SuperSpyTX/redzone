@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 18:02:23 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/31 14:08:36 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,8 @@
 #  if REDZONE_MIN_ALLOCS != 100
 #   error "Redzone: Minimum # of allocations is wrong, set to 100 to fix."
 #  endif
-#  if !REDZONE_FORBIDDEN
-#   if REDZONE_MMAP_STATS
-#    error "Redzone: Redzone mmap statistics is forbidden with correction mode."
-#   endif
-#  else
-#   warning "Redzone: Forbidden feature flag is enabled in correction mode."
-#  endif
 #  if DEBUG && !REDZONE_DEBUG
-#   error "Redzone: Use REDZONE_DEBUG=1 to compile the debugger."
+#   error "Redzone: Use REDZONE_DEBUG=1 (or ./configure --lite --debug --correction) to compile the debugger."
 #  endif
 # endif
 
@@ -109,6 +102,7 @@ typedef struct	s_alloc
 typedef struct	s_zone
 {
 	t_index		index;
+	t_bmagic	bucket;
 	t_size		cur_bytes;
 	t_size		max_bytes;
 	t_size		ptrtblct;
@@ -135,6 +129,7 @@ typedef struct	s_freedptr
 typedef struct	s_bucket
 {
 	t_zone		**zones;
+	t_zone		*tip;
 	t_freedptr	**freedptrs;
 	t_count		zones_ct;
 	t_count		freedptrs_ct;
@@ -157,9 +152,9 @@ typedef struct	s_bucket
 
 t_bucket		g_buckets[BUCKET_MAX_COUNT] =
 {
-	{0, 0, 0, 0, TINY_MALLOC, 0, 100},
-	{0, 0, 0, 0, SMALL_MALLOC, 100, 500},
-	{0, 0, 0, 0, LARGE_MALLOC, 500, 0}
+	{0, 0, 0, 0, 0, TINY_MALLOC, 0, 100},
+	{0, 0, 0, 0, 0, SMALL_MALLOC, 100, 500},
+	{0, 0, 0, 0, 0, LARGE_MALLOC, 500, 0}
 };
 
 # else
@@ -229,42 +224,20 @@ extern t_bucket	g_buckets[BUCKET_MAX_COUNT];
 # define LOOPT(p1, p2, p3) for (p1; p2; p3) {
 # define END }
 
-/*
-** Forbidden features.
-**
-** In the malloc PDF, you're only allowed two global variables:
-** - One for holding all the mmap'd zones for all your allocations.
-** - One for storing a pthread lock.
-**
-** Additional global variables are required for different features of Redzone,
-** and if this is being built for a correction (REDZONE_CORRECTION=1),
-** then these extra variables are not compiled in, otherwise it will violate
-** the rules of the correction.
-**
-** Variables are obfuscated for obvious (norm) reasons.
-*/
-
 # define M0(len) mmap(0, len, PROT_READ|PROT_WRITE, MAP_ANON|MAP_PRIVATE, -1, 0)
 # define M1(obj, te, len) obj = (te)M0(len)
-
-# if REDZONE_FORBIDDEN
 
 /*
 ** Redzone mmap statistics.
 */
 
-#  if REDZONE_MMAP_STATS
+# if REDZONE_MMAP_STATS
 
 size_t			g_msz;
 size_t			g_mct;
 
-#   if REDZONE_DEBUG != 1
-#    define REDZONE_MMAP(ob, ty, len) g_msz += len; g_mct++; M1(ob, ty, len)
-#   else
-#    define M2(o, t, l) printf("RZMMAP Alloc: %lu bytes...\n", l); M1(o, t, l)
-#    define REDZONE_MMAP(ob, ty, len) g_msz += len; g_mct++; M2(ob, ty, len)
-#   endif
-#  endif
+#  define M2(o, t, l) print_mmap(l); M1(o, t, l)
+#  define REDZONE_MMAP(ob, ty, len) g_msz += len; g_mct++; M2(ob, ty, len)
 # else
 #  define REDZONE_MMAP(obj, ty, len) M1(obj, ty, len)
 # endif
@@ -275,7 +248,6 @@ size_t			g_mct;
 
 /*
 ** Redzone internal function naming scheme:
-** (oh no not another one of these walls of text)
 **
 ** _initialize (Create & Instantiate a new object)
 ** _ptr (Cast allocated pointer to relevant object)
@@ -302,5 +274,13 @@ t_zone			*zone_ptr(void *ptr);
 
 void			*alloc_initialize(t_bucket *b, t_zone *z, size_t sz);
 void			*allocate(size_t size);
+
+/*
+** Printer / Error handling functions
+*/
+
+void			print(char *hdr, char *msg);
+void			print_mmap(size_t size);
+void			error_abort(char *error);
 
 #endif

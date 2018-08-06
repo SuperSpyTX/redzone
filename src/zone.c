@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/07 18:24:35 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/12 20:01:13 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/30 18:24:47 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int				zone_initialize(t_bucket *bucket, t_zone **ptr)
 	if (!*ptr)
 		return (-1);
 	(*ptr)->index = bucket->zones_ct++;
+	(*ptr)->bucket = bucket->base_magic;
 	(*ptr)->cur_bytes = 0;
 	(*ptr)->max_bytes = (t_size)MAX_ZONE_BYTES((*ptr), bucket);
 	(*ptr)->ptrtblct = PTI_CT(bucket);

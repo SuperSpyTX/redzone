@@ -1,22 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   stats.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/06/05 14:19:03 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/31 14:12:11 by jkrause          ###   ########.fr       */
+/*   Created: 2018/07/31 14:12:45 by jkrause           #+#    #+#             */
+/*   Updated: 2018/07/31 14:33:06 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#define A_LARGE_INIT_HACK
 #include "redzone/internal.h"
+#include "redzone.h"
 
-T_INIT			redzone_init(void)
+void			show_alloc_mem(void)
 {
-	LOOPI(BUCKET_MAX_COUNT, i++);
-	bucket_initialize(&g_buckets[i]);
-	END;
+
 }
+
+void			show_alloc_mem_ex(int type)
+{
+	if (type & MMAP_STATS_MODE)
+		print_mmap(g_msz);
+
+}
+

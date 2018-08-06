@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 18:02:21 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/31 14:07:11 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,20 @@
 */
 
 /*
+** The prime debugging features of Redzone.
+*/
+
+# ifndef REDZONE_DEBUG
+#  define REDZONE_DEBUG 0
+# endif
+
+/*
 ** Is this being built for the Malloc correction?
 ** This makes minor changes (malloc.h symlink, etc) to the codebase.
 */
 
 # ifndef REDZONE_CORRECTION
 #  define REDZONE_CORRECTION 0
-# endif
-
-/*
-** Compile-in forbidden features (mmap stats for example).
-** This flag allows things like REDZONE_MMAP_STATS to be
-** compiled regardless of REDZONE_CORRECTION.
-**
-** A compile-time warning is generated if REDZONE_CORRECTION
-** is set to 1.
-*/
-# ifndef REDZONE_FORBIDDEN
-#  define REDZONE_FORBIDDEN !REDZONE_CORRECTION
 # endif
 
 /*
@@ -56,21 +52,10 @@
 ** Defines whether or not to collect extra information on
 ** Redzone's mmap() calls.  This is used for performance
 ** optimizations and does not impact performance.
-**
-** This is a forbidden feature,
-** see "Forbidden Features" in redzone/internal.h for more information.
 */
 
 # ifndef REDZONE_MMAP_STATS
-#  define REDZONE_MMAP_STATS REDZONE_FORBIDDEN
-# endif
-
-/*
-** The prime debugging features of Redzone.
-*/
-
-# ifndef REDZONE_DEBUG
-#  define REDZONE_DEBUG 0
+#  define REDZONE_MMAP_STATS REDZONE_DEBUG
 # endif
 
 /*

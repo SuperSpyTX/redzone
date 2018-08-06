@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:11 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 22:05:01 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/08/02 19:39:45 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,8 @@ void			*malloc(size_t size)
 {
 	void		*ptr;
 
-	//ptr = allocate(size);
-	//return (ptr);
-	(void)size;
-	(void)ptr;
+	ptr = allocate(size);
+	return (ptr);
 	return (0);
 }
 
@@ -33,8 +31,4 @@ void			*realloc(void *ptr, size_t size)
 void			free(void *ptr)
 {
 	(void)ptr;
-}
-
-void			show_alloc_mem(void)
-{
 }
