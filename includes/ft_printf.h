@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/18 10:26:16 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 18:02:36 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/17 18:50:26 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,9 @@ typedef union			u_magicnum
 	unsigned char		uchar;
 	unsigned short		ushort;
 	long				slong;
-	long long			slonglong;
+	long long			llong;
 	unsigned long		ulong;
+	unsigned long long	ullong;
 	void				*magic;
 }						t_magicnum;
 
@@ -93,7 +94,7 @@ typedef struct			s_input
 ** Write Modules
 */
 
-int						bufferwrite_module_write(t_input *input, char *write);
+void					bufferwrite_module_write(t_input *input, char *write);
 int						bufferwrite_module_flush(t_input *input, void *nil);
 
 int						bufferstring_module_write(t_input *input, char *string);

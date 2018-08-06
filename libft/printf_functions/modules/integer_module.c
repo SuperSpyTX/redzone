@@ -6,54 +6,56 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/31 14:23:49 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/09 14:58:26 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/17 18:33:47 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void				*magic_convert(t_input *input, void *arg, int sign)
+void				*magic_convert(t_input *input, va_list ptr, int sign)
 {
-	t_magicnum		number;
-	void			*casted;
+	t_magicnum			number;
+	unsigned long long	num;
 
-	number = (t_magicnum)arg;
-	if (CMP(input->length, 'l') || CMP(input->length, 't'))
-		casted = (void*)(number.magic);
+	num = va_arg(ptr, unsigned long long);
+	number = (t_magicnum)num;
+	if (CMP(input->length, 'l' && !sign))
+		return (void*)(input->length_extended ? num : number.ulong);
+	else if (CMP(input->length, 'l') || CMP(input->length, 't'))
+		return (void*)(input->length_extended ? number.llong : number.slong);
 	else if (CMP(input->length, 'h') && !sign)
-		casted = (void*)(input->length_extended
-				? (intptr_t)number.uchar : (intptr_t)number.ushort);
+		return ((void*)(input->length_extended
+				? (intptr_t)number.uchar : (intptr_t)number.ushort));
 	else if (CMP(input->length, 'h'))
-		casted = (void*)(input->length_extended
-				? (intptr_t)number.schar : (intptr_t)number.sshort);
+		return ((void*)(input->length_extended
+				? (intptr_t)number.schar : (intptr_t)number.sshort));
 	else if (CMP(input->length, 'j'))
-		casted = (void*)number.intmax;
+		return ((void*)number.intmax);
 	else if (CMP(input->length, 'z') && !sign)
-		casted = (void*)number.usize_t;
+		return ((void*)number.usize_t);
 	else if (CMP(input->length, 'z'))
-		casted = (void*)number.sssize_t;
+		return ((void*)number.sssize_t);
 	else if (!sign)
-		casted = (void*)(intptr_t)number.uint;
-	else
-		casted = (void*)(intptr_t)number.sint;
-	return (casted);
+		return ((void*)(intptr_t)number.uint);
+	return ((void*)(intptr_t)number.sint);
 }
 
-int					integer_conv(t_input *input, va_list ptr,
-						int base, char *alpha)
+int					integer_conv(t_input *input, va_list ptr, char *alpha)
 {
-	char			*buffer;
-	void			*number;
+	char			buffer[40];
+	char			alphabuf[32];
+	int				allength;
 	int				sign;
 
 	sign = 1;
-	if (input->type != 'd' && input->type != 'i'
-			&& input->type != 'D' && input->type != 'I')
-		sign = 0;
-	number = magic_convert(input, va_arg(ptr, void*), sign);
-	if (CMP(input->type, 'u') || base != 10)
-		sign = 0;
-	buffer = ft_ltostr_base(number, base, alpha, sign);
+	allength = ft_strlen(alpha);
+	alpha = ft_memcpy(alphabuf, alpha, (allength > 32 ? 32 : allength));
+	alpha[allength] = 0;
+	sign = ((!LC(input->type, 'd') && !LC(input->type, 'i')) ? 0 : sign);
+	sign = ((CMP(input->type, 'u') || ft_strlen(alpha + 1) != 10) ? 0 : sign);
+	(sign == 1 ? alpha[0] = '-' : (void)alpha);
+	ft_ltostr_base(buffer, 40, alpha,
+			magic_convert(input, ptr, sign));
 	input->module = 'i';
 	if (buffer[0] == '-')
 	{
@@ -64,7 +66,6 @@ int					integer_conv(t_input *input, va_list ptr,
 		module_call(FORMATMODULE_FORMAT, input, "");
 	else
 		module_call(FORMATMODULE_FORMAT, input, buffer);
-	free(buffer);
 	return (1);
 }
 
@@ -96,12 +97,12 @@ int					integer_module(t_input *input, va_list *ptr)
 	aliasing(input);
 	if (LC(input->type, 'd') || LC(input->type, 'u')
 			|| LC(input->type, 'i'))
-		return (integer_conv(input, *ptr, 10, "0123456789abcdef"));
+		return (integer_conv(input, *ptr, " 0123456789"));
 	else if (CMP(input->type, 'x'))
-		return (integer_conv(input, *ptr, 16, "0123456789abcdef"));
+		return (integer_conv(input, *ptr, " 0123456789abcdef"));
 	else if (CMP(input->type, 'X'))
-		return (integer_conv(input, *ptr, 16, "0123456789ABCDEF"));
+		return (integer_conv(input, *ptr, " 0123456789ABCDEF"));
 	else if (LC(input->type, 'o'))
-		return (integer_conv(input, *ptr, 8, "0123456789abcdef"));
+		return (integer_conv(input, *ptr, " 01234567"));
 	return (1);
 }

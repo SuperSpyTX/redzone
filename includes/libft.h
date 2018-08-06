@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/06 20:58:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/06/05 14:36:44 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/15 01:41:29 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,6 @@ int					ft_is_whitespace(const char c);
 int					ft_ishex(const char c);
 t_no				*ft_no(void *anything);
 char				*ft_strnchr(const char *s, int c, size_t size);
-char				*ft_ltostr_base(void *value, int base,
-						char *alpha, int sign);
+int					ft_ltostr_base(char *buffer, size_t bufsize,
+						char *alpha, void *value);
 #endif

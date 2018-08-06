@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/31 12:58:42 by jkrause           #+#    #+#             */
-/*   Updated: 2017/09/14 20:47:41 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/16 17:42:42 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,26 +66,32 @@ static long					mulsize(void *value, int base, int sign)
 	return (size);
 }
 
-char						*ft_ltostr_base(char *buff, size_t size,
-								char *alpha)
+int							ft_ltostr_base(char *buffer, size_t bufsize,
+								char *alpha, void *value)
 {
-	char					*buffer;
-	int						buffsize;
+	size_t					buffsize;
 	unsigned long			ucpy;
-	long					cpy;
 	long					mul;
+	int						sign;
+	int						bass;
 
+	if (!buffer || bufsize < 3)
+		return (0);
+	bufsize--;
+	sign = (alpha[0] == '-' ? 1 : 0);
+	(alpha[0] == ' ' || alpha[0] == '-' ? (void)alpha++ : (void)alpha);
 	buffsize = 0;
+	bass = ft_strlen(alpha);
 	ucpy = (unsigned long)value;
-	cpy = (long)value;
-	mul = mulsize(value, base, sign);
-	buffer = (char*)malloc(sizeof(char) * mul + 3);
-	if (cpy < 0 && sign)
+	mul = mulsize(value, bass, sign);
+	if (((long)value) < 0 && sign)
 		buffer[buffsize++] = '-';
-	while (mul-- > 0)
-		buffer[buffsize++] = alpha[(long)interpret_mulcast(value, base,
+	while (mul-- > 0 && buffsize < bufsize)
+		buffer[buffsize++] = alpha[(long)interpret_mulcast(value, bass,
 				mul, sign)];
-	buffer[buffsize++] = alpha[((sign && cpy < 0 ? -cpy : ucpy) % base)];
+	if (buffsize < bufsize)
+		buffer[buffsize++] = alpha[((sign && ((long)value) < 0
+					? -((long)value) : ((unsigned long)value)) % bass)];
 	buffer[buffsize++] = '\0';
-	return (buffer);
+	return (1);
 }

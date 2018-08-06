@@ -15,7 +15,7 @@
 
 echo "[*] Makefile v1.7 Configuration Tool";
 
-if [ "$(echo $1 | grep -oE '-help' 2>/dev/null)" = "-help" ];  then
+if [ "$(echo $1)" = "-help" ];  then
 	echo "[!] Usage: $0 [--lite|--correction|--libft|--debug]";
 	exit 255;
 fi

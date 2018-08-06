@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/05 19:13:11 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 22:33:36 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/17 17:21:43 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 int					pad_write_module(char c, int repeats)
 {
-	while ((--repeats) != 0)
+	while ((--repeats) >= 0)
 		write_module(&c, 1);
 	return (repeats);
 }

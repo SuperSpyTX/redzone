@@ -19,9 +19,10 @@ endif
 REDZONE_NAME = redzone_malloc_$(HOSTTYPE).so
 REDZONE_SYMNAME = redzone_malloc.so
 LFLAGS = -shared
-CFLAGS =  -fPIC -Wall -Werror -Wextra 
+CFLAGS = -g -DREDZONE_DEBUG=1 -fPIC -Wall -Werror -Wextra 
 CFLAGS += -I includes
 REDZONE_SRC = src/buckets.c \
+src/print.c \
 src/redzone.c \
 src/init.c \
 src/alloc.c \
@@ -32,18 +33,19 @@ libft-min/ft_ltostr_base.c \
 libft-min/ft_printf.c \
 libft-min/ft_isdigit.c \
 libft-min/parse_module.c \
+libft-min/ft_bzero.c \
 libft-min/module_manager.c \
 libft-min/expand_write.c \
+libft-min/formati_module.c \
 libft-min/expand_pad.c \
 libft-min/ft_putstr_fd.c \
 libft-min/ft_lstdelone.c \
-libft-min/ft_strdup.c \
 libft-min/ft_putnbr_fd.c \
+libft-min/directbuffer_module.c \
 libft-min/ft_putendl_fd.c \
 libft-min/ft_memdel.c \
 libft-min/string_module.c \
 libft-min/bufferwrite_module.c \
-libft-min/ft_putchar.c \
 libft-min/ft_strlen.c \
 libft-min/ft_strsub.c \
 libft-min/ft_strnew.c \
@@ -52,7 +54,6 @@ libft-min/asterisks_module.c \
 libft-min/ft_strnchr.c \
 libft-min/integer_module.c \
 libft-min/ft_strncmp.c \
-libft-min/format_module.c \
 libft-min/ft_putchar_fd.c \
 libft-min/get_next_line.c \
 libft-min/ft_memset.c \

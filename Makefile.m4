@@ -36,6 +36,7 @@ define(MK_AUTO_COMPILER,ifelse(MK_AUTO_ISLINUX, 1, clang, gcc))
 define(MK_REDZONE_AUTO_SRC_DIR, patsubst(MK_REDZONE_SRC_DIRS,` ',`````,'''''))
 pushdef(`MK_REDZONE_AUTO_SRC_DIR', ifelse(MK_REDZONE_SRC_DIRS,.,.,{MK_REDZONE_AUTO_SRC_DIR}))
 define(MK_REDZONE_AUTO_SRC, esyscmd(bash -c 'find MK_REDZONE_AUTO_SRC_DIR -type f -name "*.c" | sed -e "s/$/ \\\/g"'))
+
 define(MK_REDZONE_AUTO_SRC_DIR, patsubst(MK_REDZONE_SRC_DIRS,` ',```,'''))
 define(MK_REDZONE_AUTO_INCLUDE_DIR, -I patsubst(MK_REDZONE_INCLUDE_DIRS,` ',``` -I '''))
 

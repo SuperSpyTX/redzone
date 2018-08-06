@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/18 11:15:43 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 18:02:32 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/17 18:57:54 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int					search(t_input *parsed, char *fmt)
 	char				*search;
 
 	search = (char*)fmt;
+	ft_bzero(parsed, sizeof(t_input));
 	while (*search != '\0')
 	{
 		search = ft_strchr(fmt, '%');

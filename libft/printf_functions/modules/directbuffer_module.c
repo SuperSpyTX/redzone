@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/05 20:24:52 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/05 18:02:35 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/18 15:04:33 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,10 @@ void			directbuffer_module_write(t_input *input, char *write)
 	if ((g_direct_maxsize - g_direct_cursize) == 0)
 		return ;
 	size = (int)input;
-	//if (size == 0)
-	//	return ((void)(g_direct_ptr[g_direct_cursize++] = 0));
 	if ((g_direct_maxsize - g_direct_cursize) < size)
 		size = (g_direct_maxsize - g_direct_cursize) - 1;
 	ft_memcpy(g_direct_ptr + g_direct_cursize, write, size);
 	g_direct_cursize += size;
-	//if ((g_direct_maxsize - g_direct_cursize) == 0)
-	//	g_direct_ptr[g_direct_maxsize] = 0;
 }
 
 int				directbuffer_module_flush(t_input *input, void *nil)

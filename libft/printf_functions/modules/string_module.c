@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/18 13:23:30 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/09 14:48:33 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/07/18 15:39:12 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,19 @@ int					string_aliasing(t_input *input)
 	return (0);
 }
 
+/*
+** Swallow the argument if the call is unsupported.
+** While this should be handled in the appropriate location,
+** it is hopefully to fix a crash bug.
+*/
+
 int					string_module(t_input *input, va_list *ptr)
 {
 	if (string_aliasing(input))
 		return (1);
-	else if (LC(input->type, 'c') || LC(input->type, 's'))
+	else if (CMP(input->type, 'c') || CMP(input->type, 's'))
 		write_conv(input, va_arg(*ptr, void*));
+	else
+		va_arg(*ptr, void*);
 	return (1);
 }
