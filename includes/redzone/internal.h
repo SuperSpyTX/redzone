@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/31 14:08:36 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/08/07 16:06:53 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 #   error "Redzone: Minimum # of allocations is wrong, set to 100 to fix."
 #  endif
 #  if DEBUG && !REDZONE_DEBUG
-#   error "Redzone: Use REDZONE_DEBUG=1 (or ./configure --lite --debug --correction) to compile the debugger."
+#   error "Redzone: Use ./configure --lite --debug --correction to compile."
 #  endif
 # endif
 
@@ -113,14 +113,14 @@ typedef struct	s_zone
 ** Freed pointers are part of the anti-fragmentation system.
 */
 
-typedef struct	s_freedptr
+typedef struct	s_fptr
 {
 	void		*addr;
 	t_size		min_size;
 	t_size		max_size;
 	t_magic		magic;
 	t_index		index;
-}				t_freedptr;
+}				t_fptr;
 
 /*
 ** Bucket holds multiple zones (in blocks of 8)
@@ -130,7 +130,7 @@ typedef struct	s_bucket
 {
 	t_zone		**zones;
 	t_zone		*tip;
-	t_freedptr	**freedptrs;
+	t_fptr		**freedptrs;
 	t_count		zones_ct;
 	t_count		freedptrs_ct;
 	t_bmagic	base_magic;
@@ -229,6 +229,8 @@ extern t_bucket	g_buckets[BUCKET_MAX_COUNT];
 
 /*
 ** Redzone mmap statistics.
+** Purely informational and does not affect the operation of
+** Redzone.
 */
 
 # if REDZONE_MMAP_STATS
@@ -247,10 +249,25 @@ size_t			g_mct;
 */
 
 /*
-** Redzone internal function naming scheme:
+** Redzone internal data structure function naming scheme / layout:
 **
-** _initialize (Create & Instantiate a new object)
-** _ptr (Cast allocated pointer to relevant object)
+** Template: object_function
+**
+** _initialize (Instantiate / Initialize a new object)
+** _ptr (Cast alloc* pointer to relevant object)
+** _new (Allocate / Create new object)
+** _free (Destroy and/or free this object)
+** _valid (Validate pointer that it is said object)
+**
+** It is not required to implement all of these, as most
+** of these data structures, or "objects" are used together.
+**
+** Combined object naming scheme:
+**
+** Template: object1_object2_function
+**
+** Example: fptr_alloc_new -> Allocates new alloc* pointer based on
+** information provided from the freed pointer.
 */
 
 /*
@@ -258,22 +275,41 @@ size_t			g_mct;
 */
 
 void			bucket_initialize(t_bucket *bucket);
-void			*bucket_allocate(t_bucket *b, size_t size);
 t_bucket		*bucket_ptr(void *ptr);
+t_zone			*bucket_tip(t_bucket *bucket);
+
+void			*REMOVE_bucket_allocate(t_bucket *b, size_t size);
 
 /*
 ** Zone management functions
 */
 
-int				zone_initialize(t_bucket *bucket, t_zone **ptr);
+void			zone_initialize(t_bucket *bucket, t_zone **ptr);
 t_zone			*zone_ptr(void *ptr);
+t_zone			*zone_new(t_bucket *bucket);
+void			zone_free(t_zone *zone);
+int				zone_valid(void *ptr);
 
 /*
 ** Allocation management functions
 */
 
-void			*alloc_initialize(t_bucket *b, t_zone *z, size_t sz);
-void			*allocate(size_t size);
+void			alloc_initialize(t_magic m, size_t sz);
+t_alloc			*alloc_new(t_bucket *b, t_zone *z, size_t sz);
+void			alloc_free(t_alloc *alloc);
+
+void			*REMOVE_allocate(size_t size);
+
+/*
+** Free pointer management functions
+*/
+
+void			fptr_initialize(t_zone *z, t_alloc *alloc);
+t_fptr			*fptr_new(t_alloc *alloc);
+void			fptr_free(t_fptr *p);
+int				fptr_valid(t_fptr *p);
+
+t_alloc			*fptr_alloc_new(t_fptr *p, size_t sz);
 
 /*
 ** Printer / Error handling functions

@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/31 14:07:11 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/08/07 11:11:41 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <libft.h>
 # include <ft_printf.h>
+# include "redzone/constants.h"
 
 /*
 ** Redzone config build options
@@ -75,8 +76,6 @@
 # define MMAP_STATS_MODE 1
 # define FREED_MEMORY_MODE 2
 
-# define T_EXPVOID __attribute__((visibility("default")))void
-
 /*
 ** Standard functions
 */
@@ -109,13 +108,13 @@ T_EXPVOID		malloc_size(void *ptr);
 ** bounds of the allocated pointer.
 */
 
-void			redzone_check(void *ptr);
-int				redzone_check_bounds(void *ptr, size_t size);
+T_EXPVOID		redzone_check(void *ptr);
+T_EXPINT		redzone_check_bounds(void *ptr, size_t size);
 
 /*
 ** Redzone probe
 */
-char			*redzone_probe(void *ptr);
+T_EXPCHAR		*redzone_probe(void *ptr);
 
 /*
 ** Redzone guard (protect memory allocations)

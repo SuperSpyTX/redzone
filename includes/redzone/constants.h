@@ -6,12 +6,12 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 16:52:26 by jkrause           #+#    #+#             */
-/*   Updated: 2018/07/16 18:38:47 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/08/07 11:12:10 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONSTANTS_H
-# define CONSTANTS_H
+#ifndef REDZONE_CONSTANTS_H
+# define REDZONE_CONSTANTS_H
 # include <stdlib.h>
 # include <stdint.h>
 
@@ -69,5 +69,8 @@ typedef t_u64	t_fence;
 */
 
 # define T_INIT __attribute__((constructor)) void
+# define T_EXPVOID __attribute__((visibility("default")))void
+# define T_EXPCHAR __attribute__((visibility("default")))char
+# define T_EXPINT __attribute__((visibility("default")))int
 
 #endif
