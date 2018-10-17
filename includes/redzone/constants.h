@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 16:52:26 by jkrause           #+#    #+#             */
-/*   Updated: 2018/08/07 11:12:10 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/10/16 16:36:52 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,16 @@
 # endif
 
 # ifndef ZONE_PTR_SIZE
-#  define ZONE_PTR_SIZE 16
-# endif
-
-# ifndef FREEDPTR_SIZE
-#  define FREEDPTR_SIZE 256
+#  define ZONE_PTR_SIZE 255
 # endif
 
 /*
 ** Size types (from @riking/libft)
+**
+** 8 - 1 byte
+** 16 - 2 bytes
+** 32 - 4 bytes
+** 64 - 8 bytes
 */
 
 typedef int8_t		t_s8;
@@ -56,10 +57,9 @@ typedef uint64_t	t_u64;
 ** Redzone-specific size constraints.
 */
 
-typedef t_u8	t_bool;
-typedef t_u8	t_bmagic;
+typedef t_u8	t_flag;
 typedef t_u16	t_magic;
-typedef t_u16	t_index;
+typedef t_u32	t_index;
 typedef t_u32	t_count;
 typedef t_u32	t_size;
 typedef t_u64	t_fence;

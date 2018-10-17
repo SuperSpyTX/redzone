@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/08/07 16:06:53 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/10/16 17:12:20 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,20 @@
 # endif
 
 /*
-** Structures
+** Data Structures
+** Data Structures Everywhere.
 */
 
 /*
 ** Formerly called 't_page'.
-** Where this is allocated, it is aligned in the pointer table.
+** Each allocation is recorded in an array-aligned pointer table.
+**
+** See "Pointer Table Model" for more information.
+**
+** TODO: Determine how the fencing should work.  It is more concerning that
+** the fptr header does not have this kind of fencing, but this does.
+** Perhaps a change would be to make sure that if REDZONE_DEBUG is enabled,
+** then basically make sure that fencing is also enabled for fptr data too.
 */
 
 typedef struct	s_alloc
@@ -80,37 +88,76 @@ typedef struct	s_alloc
 ** then dividing it by 2 would increase the capacity twofold.
 **
 ** But instead of dividing by 2 consistently, you can simply divide
-** the total allocated memory (minus zone header size) by min_size
-** (in addition to alloc header size) and the result would have the
-** maximum # of all that can fit in the memory space.
+** the total allocated memory (minus zone header size) by
+** (min_size + alloc header size).
 **
-** Finding freed memory allocations after the fact is only a
-** matter of searching through the pointer table array, which
-** is actually relative to the position where the allocation
-** is.
+** The resulting number is the maximum # of allocations that
+** can fit in the memory space at any given time.  It is not
+** exact as allocations larger than the minimum will reduce the
+** # of allocations possible.  All of this is kept track with
+** cur_bytes and max_bytes, so over/underruns shouldn't happen.
 **
-** TODO: Explain how block merges would work.
+** Block merges are possible with this model.
+** Consult the freed pointer notes below for more information.
 */
 
 /*
-** Each zone is essentially an memory page.
-** ptr_table is an pointer table for all allocations,
-** Easier to then refer to specific memory allocations
-** as necessary.
+** Each zone is essentially an memory page with an pointer table index.
+**
+** The pointer table holds a single byte (t_flag) to represent the type of
+** memory currently allocated at that exact location in the zone, which can
+** either be a rb node or a real allocation.
+**
+** If you do not understand any of the type size macros, refer to the
+** redzone/constants.h file.
 */
 
 typedef struct	s_zone
 {
-	t_index		index;
-	t_bmagic	bucket;
+	t_magic		magic;
 	t_size		cur_bytes;
 	t_size		max_bytes;
-	t_size		ptrtblct;
-	t_alloc		**ptr_tbl;
+	t_count		ptrtbl_allocs;
+	t_count		ptrtbl_max;
+	t_flag		*ptrtbl;
 }				t_zone;
 
 /*
-** Freed pointers are part of the anti-fragmentation system.
+** Freed pointers are part of an elusive anti-memory fragmentation system.
+** It utilizes an in-place red black tree backed by the zone allocation memory.
+** During malloc() call, if there's an node that can fit the allocation size
+** required, it will utilize it by writing over the fptr headers with allocation
+** headers.
+**
+** It is also possible that the entire node isn't consumed (max: 40, size: 20)
+** In these cases, an fptr header is written right after the new allocation:
+**
+** Example Memory Layout: <alloc (10)> <memory (20)> <fptr header (20)>
+** Example PTI: [..., ALLOC, 0, 0, FPTR, 0, ...]
+**
+** In theory: If there are no red black tree nodes in the bucket, it is assumed
+** that all other currently allocated zones are _full_, which means it is not
+** possible to allocate more memory from within other zones other than the tip.
+**
+** Block merges would work during the creation of the fptr node: scan the PTI
+** left and right for 1 fptr header located right next to the current position
+** in the PTI.
+**
+** Example PTI: [..., FPTR, 0, 0, 0, ..., FPTR, 0, 0, 0, ..., FPTR, ...]
+**
+** If you find an existing allocation before an fptr header when scanning
+** either direction, stop scanning (no fptrs next to each other).
+**
+** Then you merge the fptr nodes in inorder traversal, supplementing root node
+** for left node if it does not exist:
+**
+** Inorder: (Left, Root, Right)
+**
+** Possible merge combination examples:
+**
+** - Merge Root with Left node only (no right node).
+** - Merge Right with Root node only (no left node).
+** - Merge Root and Right with Left node (if left node exists as well).
 */
 
 typedef struct	s_fptr
@@ -123,17 +170,18 @@ typedef struct	s_fptr
 }				t_fptr;
 
 /*
-** Bucket holds multiple zones (in blocks of 8)
+** Buckets hold the necessary data for dynamic memory
+** allocation in a given min/max range (0 - 512 bytes for example).
 */
 
 typedef struct	s_bucket
 {
+	t_flag		base_magic;
 	t_zone		**zones;
 	t_zone		*tip;
-	t_fptr		**freedptrs;
+	t_fptr		*root;
 	t_count		zones_ct;
-	t_count		freedptrs_ct;
-	t_bmagic	base_magic;
+	t_size		fptr_max;
 	t_size		min_size;
 	t_size		max_size;
 }				t_bucket;
@@ -152,9 +200,9 @@ typedef struct	s_bucket
 
 t_bucket		g_buckets[BUCKET_MAX_COUNT] =
 {
-	{0, 0, 0, 0, 0, TINY_MALLOC, 0, 100},
-	{0, 0, 0, 0, 0, SMALL_MALLOC, 100, 500},
-	{0, 0, 0, 0, 0, LARGE_MALLOC, 500, 0}
+	{TINY_MALLOC, 0, 0, 0, 0, 0, 0, 0, 0},
+	{SMALL_MALLOC, 0, 0, 0, 0, 0, 0, 100, 500},
+	{LARGE_MALLOC, 0, 0, 0, 0, 0, 0, 500, 0}
 };
 
 # else
