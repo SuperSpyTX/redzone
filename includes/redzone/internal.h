@@ -6,7 +6,7 @@
 /*   By: jkrause <jkrause@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 15:48:23 by jkrause           #+#    #+#             */
-/*   Updated: 2018/10/16 17:12:20 by jkrause          ###   ########.fr       */
+/*   Updated: 2018/10/16 17:40:20 by jkrause          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,11 +145,13 @@ typedef struct	s_zone
 **
 ** Example PTI: [..., FPTR, 0, 0, 0, ..., FPTR, 0, 0, 0, ..., FPTR, ...]
 **
-** If you find an existing allocation before an fptr header when scanning
-** either direction, stop scanning (no fptrs next to each other).
+** While searching for nodes, no memory allocation can appear during the search.
 **
-** Then you merge the fptr nodes in inorder traversal, supplementing root node
-** for left node if it does not exist:
+** Example: If scanning left, and an allocation exists, it stops scanning there
+** and assumes no node can be found.
+**
+** Then you merge the resulting fptr nodes in inorder traversal,
+** but supplementing root node for left node if it does not exist.
 **
 ** Inorder: (Left, Root, Right)
 **
