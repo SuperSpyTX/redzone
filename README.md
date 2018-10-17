@@ -16,4 +16,5 @@ TODO
 
 ### Benchmarks / Test Suite
 
-TODO (prepare urself in the meantime adam ( ͡° ͜ʖ ͡°))[https://github.com/suedadam]
+TODO [prepare urself in the meantime adam ( ͡° ͜ʖ ͡°)](https://github.com/suedadam)
+
